@@ -5,6 +5,7 @@ use crate::model::Todo;
 use crate::server::{get_todos, toggle_all};
 use crate::components::header::Header;
 use crate::components::todo_list::TodoList;
+use crate::components::footer::Footer;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -83,8 +84,9 @@ pub fn TodoApp() -> impl IntoView {
                     />
                     <label for="toggle-all">"Mark all as complete"</label>
                 </Show>
-                <TodoList todos=todos on_change=on_change/>
+                <TodoList todos=todos on_change=on_change.clone()/>
             </section>
+            <Footer todos=todos on_change=on_change/>
         </section>
         <footer class="info">
             <p>"Double-click to edit a todo"</p>
