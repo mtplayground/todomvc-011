@@ -4,6 +4,7 @@ use leptos_router::*;
 use crate::model::Todo;
 use crate::server::get_todos;
 use crate::components::header::Header;
+use crate::components::todo_list::TodoList;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -32,31 +33,27 @@ pub fn TodoApp() -> impl IntoView {
         });
     };
 
-    // Load todos on mount
     let refresh_clone = refresh_todos.clone();
     create_effect(move |_| {
         refresh_clone();
     });
 
-    let on_add = Callback::new(move |_: ()| {
+    let on_change: Callback<()> = Callback::new(move |_: ()| {
         refresh_todos();
     });
+
+    let on_add: Callback<()> = {
+        let on_change = on_change.clone();
+        Callback::new(move |_: ()| {
+            leptos::Callable::call(&on_change, ());
+        })
+    };
 
     view! {
         <section class="todoapp">
             <Header on_add=on_add/>
             <section class="main">
-                <ul class="todo-list">
-                    {move || todos.get().iter().map(|todo| {
-                        view! {
-                            <li>
-                                <div class="view">
-                                    <label>{todo.title.clone()}</label>
-                                </div>
-                            </li>
-                        }
-                    }).collect::<Vec<_>>()}
-                </ul>
+                <TodoList todos=todos on_change=on_change/>
             </section>
         </section>
         <footer class="info">
