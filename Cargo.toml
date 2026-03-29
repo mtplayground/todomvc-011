@@ -20,6 +20,7 @@ console_error_panic_hook = { version = "0.1", optional = true }
 http = { version = "1.0" }
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite"], optional = true }
 dotenvy = { version = "0.15", optional = true }
+serde = { version = "1", features = ["derive"] }
 
 [features]
 default = ["ssr"]
