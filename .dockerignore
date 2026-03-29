@@ -1,0 +1,10 @@
+target/
+node_modules/
+.git/
+.gh_token
+.claude/
+*.db
+.progress
+.deploy_url
+.pr_url
+.merge_status
