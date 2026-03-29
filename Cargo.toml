@@ -1,0 +1,57 @@
+[package]
+name = "todomvc"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+leptos = { version = "0.6.13", features = ["nightly"] }
+leptos_axum = { version = "0.6.13", optional = true }
+leptos_meta = { version = "0.6.13", features = ["nightly"] }
+leptos_router = { version = "0.6.13", features = ["nightly"] }
+axum = { version = "0.7", optional = true }
+tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
+tower = { version = "0.4", optional = true }
+tower-http = { version = "0.5", features = ["fs"], optional = true }
+wasm-bindgen = { version = "=0.2.100", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+http = { version = "1.0" }
+
+[features]
+default = ["ssr"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "dep:wasm-bindgen", "dep:console_error_panic_hook"]
+ssr = ["dep:axum", "dep:tokio", "dep:tower", "dep:tower-http", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum"]
+
+[package.metadata.leptos]
+output-name = "todomvc"
+site-root = "target/site"
+site-pkg-dir = "pkg"
+style-file = "style/main.css"
+assets-dir = "public"
+site-addr = "0.0.0.0:8080"
+reload-port = 3001
+end2end-cmd = ""
+browserquery = "defaults"
+watch = false
+env = "DEV"
+bin-features = ["ssr"]
+bin-default-features = false
+lib-features = ["hydrate"]
+lib-default-features = false
+lib-profile-release = "wasm-release"
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = 'z'
+lto = true
+codegen-units = 1
+
+[[bin]]
+name = "todomvc"
+path = "src/main.rs"
+required-features = ["ssr"]
+
+[patch.crates-io]
+server_fn = { path = "vendor/server_fn-0.6.15" }
