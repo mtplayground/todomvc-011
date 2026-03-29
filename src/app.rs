@@ -2,7 +2,7 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use crate::model::Todo;
-use crate::server::get_todos;
+use crate::server::{get_todos, toggle_all};
 use crate::components::header::Header;
 use crate::components::todo_list::TodoList;
 
@@ -49,10 +49,40 @@ pub fn TodoApp() -> impl IntoView {
         })
     };
 
+    let all_completed = move || {
+        let t = todos.get();
+        !t.is_empty() && t.iter().all(|t| t.completed)
+    };
+
+    let has_todos = move || !todos.get().is_empty();
+
+    let handle_toggle_all = {
+        let on_change = on_change.clone();
+        move |_| {
+            let completed = !all_completed();
+            let on_change = on_change.clone();
+            spawn_local(async move {
+                if toggle_all(completed).await.is_ok() {
+                    leptos::Callable::call(&on_change, ());
+                }
+            });
+        }
+    };
+
     view! {
         <section class="todoapp">
             <Header on_add=on_add/>
             <section class="main">
+                <Show when=has_todos>
+                    <input
+                        id="toggle-all"
+                        class="toggle-all"
+                        type="checkbox"
+                        prop:checked=all_completed
+                        on:change=handle_toggle_all
+                    />
+                    <label for="toggle-all">"Mark all as complete"</label>
+                </Show>
                 <TodoList todos=todos on_change=on_change/>
             </section>
         </section>
